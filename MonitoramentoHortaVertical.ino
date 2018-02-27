@@ -15,8 +15,6 @@
  * https://github.com/adafruit/DHT-sensor-library/issues/62
  * https://www.arduinoecia.com.br/2014/06/sensor-de-chuva-arduino.html
  */
-
-
 #include <Modbus.h>
 #include <ModbusIP_ESP32.h>
 #include <sys/time.h>
@@ -35,10 +33,10 @@ uint32_t get_usec();
 
 
 // DHT Sensor
-const int DHTPin = GPIO_NUM_16;
+const int DHTPin = GPIO_NUM_25;
 const int porta_sensor_chuva = GPIO_NUM_36;
 const int porta_humidade[] = {GPIO_NUM_39, GPIO_NUM_34, GPIO_NUM_35, GPIO_NUM_32};
-const int porta_solenoide = GPIO_NUM_17;
+const int porta_solenoide = GPIO_NUM_19;
 
 
 
@@ -47,6 +45,7 @@ DHT dht(DHTPin, DHTTYPE);
 
 //ModbusIP object
 ModbusIP mb;
+
 
 
 //Declaração de INPUT registers
@@ -89,7 +88,7 @@ void setup() {
  // Criar semáforo para checar no loop
   timerSemaphore = xSemaphoreCreateBinary();
   //Config Modbus IP
-    mb.config("ScadaBR", "ScadaBRunp");
+    mb.config("MS NET", "internet2018");
 
 
      while (WiFi.status() != WL_CONNECTED) {
@@ -99,6 +98,7 @@ void setup() {
     // Declarar tipos de portas
   pinMode(porta_sensor_chuva, INPUT);
   pinMode(porta_solenoide, OUTPUT);
+  pinMode(GPIO_NUM_18, OUTPUT);
 
 
 
@@ -137,36 +137,41 @@ void setup() {
 void loop() {
   //Call once inside loop() - all magic here
    mb.task();
-  digitalWrite(porta_solenoide, mb.Coil(COIL_0));
+   digitalWrite(porta_solenoide, mb.Coil(COIL_0));
 
 
   // semáforo foi disparado pelo Hardware timer
   if (xSemaphoreTake(timerSemaphore, 0) == pdTRUE){
-
-    float h = dht.readHumidity();
+    
+      float h = dht.readHumidity();
       word registro_humidade[2];
+     
+
       floatToWordArray(h, registro_humidade);
-      mb.Ireg(SENSOR_HUMIDADE_DHT_0, registro_humidade[0]);
-      mb.Ireg(SENSOR_HUMIDADE_DHT_1, registro_humidade[1]);
+      mb.Ireg(SENSOR_HUMIDADE_DHT_0, registro_humidade[1]);    
+      mb.Ireg(SENSOR_HUMIDADE_DHT_1, registro_humidade[0]);
+     
       // Read temperature as Celsius (the default)
       float t = dht.readTemperature();
+    
       word registro_temperatura[2];
-      floatToWordArray(h, registro_temperatura);
+      floatToWordArray(t, registro_temperatura);
 
-      mb.Ireg(SENSOR_TEMPERATURA_DHT_0, registro_temperatura[0]);
       mb.Ireg(SENSOR_TEMPERATURA_DHT_0, registro_temperatura[1]);
+      mb.Ireg(SENSOR_TEMPERATURA_DHT_1, registro_temperatura[0]);
       word registro[2];
 
       // Leitura do sensor de chuva
-    int sensor_chuva = analogRead(porta_sensor_chuva);
+    //int sensor_chuva = analogRead(porta_sensor_chuva);
 
-      floatToWordArray(pt100_0, registro);
+      //floatToWordArray(pt100_0, registro);
 
-      mb.Ireg(SENSOR_CHUVA, sensor_chuva);
+      //mb.Ireg(SENSOR_CHUVA, sensor_chuva);
 
 
 
   }
+ delay(100);
 
   // put your main code here, to run repeatedly:
 
@@ -178,8 +183,8 @@ void floatToWordArray(float number, word *reg){
  ArrayOfFourBytes = (byte*) &number;
  reg[0] = (ArrayOfFourBytes[1]<<8)| ArrayOfFourBytes[0];
  reg[1] = (ArrayOfFourBytes[3]<<8)| ArrayOfFourBytes[2];
-
 }
+
 
 
 // Similar to uint32_t system_get_time(void)
