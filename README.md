@@ -4,7 +4,7 @@ O uso de hortas verticais para produção doméstica é uma das formas encontrad
 
 # Objetivos
 
-Criar sistema de monitoramento de hora vertical
+Criar sistema de monitoramento de horta vertical
 
 # Materiais
 
@@ -12,8 +12,10 @@ Criar sistema de monitoramento de hora vertical
 * DHT11
 * Sensor de Humidade
 * Relé
+* Sensor de Distância HC-SR04
 * Bomba de água
 * Raspberry 3
+
 
 # Software
 
@@ -22,15 +24,15 @@ Criar sistema de monitoramento de hora vertical
 
 # Funcionalidades
 
-O sistema coletará os dados de humidade do solo, temperatura e humidade do ambiente e terá sistema de rega automático usando uma bomba controlada via temporizador. Esse temporizador será implementado no ScadaBR. 
+O sistema coletará os dados de humidade do solo, temperatura e humidade do ambiente e terá sistema de rega automático usando uma bomba controlada via temporizador. Esse temporizador será implementado no ScadaBR.
 
 
 # Etapas Desenvolvimento
 
-- [ ] Ligação DHT11 ao ESP32
-- [ ] Leitura DHT11 ao ESP32
-- [ ] Ligação de relé ao ESP32
-- [ ] Controle de bomba de água via relé
+- [x] Ligação DHT11 ao ESP32
+- [x] Leitura DHT11 ao ESP32
+- [x] Ligação de relé ao ESP32
+- [x] Controle de bomba de água via relé
 - [ ] Ligação sensor humidade do solo ao ESP32
 - [ ] Leitura sensor de humidade ao ESP32
 - [ ] Instalação ScadaBR no Raspberry 3
@@ -38,9 +40,3 @@ O sistema coletará os dados de humidade do solo, temperatura e humidade do ambi
 - [ ] Transmissão de dados aos Raspberry usando a biblioteca modbus ip
 - [ ] Implementação e teste de temporizador no Raspberry
 - [ ] Testes em campo
-
-
-
-
-
-
